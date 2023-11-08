@@ -18,19 +18,19 @@ export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Get()
-  async getAll() {
-    return this.reviewService.getAll()
+  async getReviews() {
+    return this.reviewService.getReviews()
   }
 
   @HttpCode(200)
-  @Post('leave/:productId')
+  @Post('add/:productId')
   @UsePipes(new ValidationPipe())
   @Auth()
-  async leaveReview(
+  async addReview(
     @CurrentUser('id') userId: number,
     @Body() dto: ReviewDto,
     @Param('productId') productId: string
   ) {
-    return this.reviewService.create(userId, +productId, dto)
+    return this.reviewService.addReview(userId, +productId, dto)
   }
 }

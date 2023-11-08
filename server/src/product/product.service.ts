@@ -2,10 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PaginationService } from 'src/pagination/pagination.service'
 import { PrismaService } from 'src/prisma.service'
+import { EnumProductSort } from 'src/types'
 import { slugify } from 'src/utils/slugify'
-import { EnumProductSort, GetAllProductDto } from './dto/get-all.products.dto'
 import { ProductDto } from './dto/product.dto'
-import { returnProductObjectFullest } from './return-product.object'
+import { ProductSortDto } from './dto/productSort.dto'
+import { productAllSelectObject } from './productSelect.object'
 
 @Injectable()
 export class ProductService {
@@ -14,7 +15,7 @@ export class ProductService {
     private paginationService: PaginationService
   ) {}
 
-  async getAll(dto: GetAllProductDto = {}) {
+  async getAllProducts(dto: ProductSortDto = {}) {
     const { sort, searchTerm } = dto
 
     const prismaSort: Prisma.ProductOrderByWithRelationInput[] = []
@@ -73,12 +74,25 @@ export class ProductService {
     }
   }
 
-  async byId(id: number) {
+  // async getProductByIdOrSlug<T extends Prisma.ProductFindUniqueArgs>(
+  //   args: Prisma.SelectSubset<T, Prisma.ProductFindUniqueArgs>
+  // ) {
+  //   const product = await this.prisma.product.findUnique({
+  //     where: {
+  //       ...args?.where
+  //     },
+  //     select: productAllSelectObject
+  //   })
+
+  //   if (!product) throw new NotFoundException('Product not found')
+
+  //   return product
+  // }
+
+  async getProduct(where: Prisma.ProductWhereUniqueInput) {
     const product = await this.prisma.product.findUnique({
-      where: {
-        id
-      },
-      select: returnProductObjectFullest
+      where,
+      select: productAllSelectObject
     })
 
     if (!product) throw new NotFoundException('Product not found')
@@ -86,27 +100,14 @@ export class ProductService {
     return product
   }
 
-  async bySlug(slug: string) {
-    const product = await this.prisma.product.findUnique({
-      where: {
-        slug
-      },
-      select: returnProductObjectFullest
-    })
-
-    if (!product) throw new NotFoundException('Product not found')
-
-    return product
-  }
-
-  async byCategory(categorySlug: string) {
+  async getProductByCategory(categorySlug: string) {
     const product = await this.prisma.product.findMany({
       where: {
         category: {
           slug: categorySlug
         }
       },
-      select: returnProductObjectFullest
+      select: productAllSelectObject
     })
 
     if (!product) throw new NotFoundException('Product not found')
@@ -114,15 +115,8 @@ export class ProductService {
     return product
   }
 
-  async getSimilar(id: number) {
-    const currentProduct = await this.prisma.product.findUnique({
-      where: {
-        id: id
-      },
-      select: returnProductObjectFullest
-    })
-
-    if (!currentProduct) throw new NotFoundException('Product not found')
+  async getSimilarProduct(id: number) {
+    const currentProduct = await this.getProduct({ id })
 
     const products = await this.prisma.product.findMany({
       where: {
@@ -136,13 +130,13 @@ export class ProductService {
       orderBy: {
         createdAt: 'desc'
       },
-      select: returnProductObjectFullest
+      select: productAllSelectObject
     })
 
     return products
   }
 
-  async create(categoryId: number) {
+  async addProduct(categoryId: number) {
     const product = await this.prisma.product.create({
       //category ?
       data: {
@@ -160,7 +154,7 @@ export class ProductService {
     return product.id
   }
 
-  async update(id: number, dto: ProductDto) {
+  async updateProduct(id: number, dto: ProductDto) {
     const { name, price, description, images, categoryId } = dto
 
     return this.prisma.product.update({
@@ -182,7 +176,7 @@ export class ProductService {
     })
   }
 
-  async delete(id: number) {
+  async deleteProduct(id: number) {
     return this.prisma.product.delete({
       where: {
         id

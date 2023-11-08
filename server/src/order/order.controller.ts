@@ -9,7 +9,7 @@ export class OrderController {
 
   @Get()
   @Auth()
-  async getAll(@CurrentUser('id') userId: number) {
-    return this.orderService.getAll(userId)
+  async getAllOrders(@CurrentUser('id') userId: number) {
+    return this.orderService.getAllOrders(userId)
   }
 }

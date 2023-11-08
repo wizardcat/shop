@@ -6,7 +6,7 @@ import {
   UnauthorizedException
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import { hash, verify } from 'argon2'
 import { PrismaService } from 'src/prisma.service'
 import { AuthDto } from './dto/auth.dto'
@@ -18,11 +18,17 @@ export class AuthService {
     private jwt: JwtService
   ) {}
 
-  async register(dto: AuthDto) {
+  private async getUser(where: Prisma.UserWhereUniqueInput) {
     const user = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email
-      }
+      where
+    })
+
+    return user
+  }
+
+  async register(dto: AuthDto) {
+    const user = await this.getUser({
+      email: dto.email
     })
 
     if (user) throw new BadRequestException('User alrady exists')
@@ -45,15 +51,13 @@ export class AuthService {
     }
   }
 
-  async getNewTokens(refreshToken: string) {
+  async getNewToken(refreshToken: string) {
     const result = await this.jwt.verifyAsync(refreshToken)
 
     if (!result) throw new UnauthorizedException('Invalid refresh token')
 
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: result.id
-      }
+    const user = await this.getUser({
+      id: result.id
     })
 
     const tokens = await this.issueTokens(user.id)
@@ -93,10 +97,8 @@ export class AuthService {
   }
 
   private async validateUser(dto: AuthDto) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email
-      }
+    const user = await this.getUser({
+      email: dto.email
     })
 
     if (!user) throw new NotFoundException('User not found')

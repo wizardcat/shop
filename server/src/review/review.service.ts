@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 import { ReviewDto } from './dto/review.dto'
-import { returnReviewObject } from './return-review.object'
+import { reviewSelectObject } from './reviewSelect.object'
 
 @Injectable()
 export class ReviewService {
   constructor(private prisma: PrismaService) {}
 
-  async getAll() {
+  async getReviews() {
     return this.prisma.review.findMany({
       orderBy: {
         createdAt: 'desc'
       },
-      select: returnReviewObject
+      select: reviewSelectObject
     })
   }
 
-  async create(userId: number, productId: number, dto: ReviewDto) {
+  async addReview(userId: number, productId: number, dto: ReviewDto) {
     return this.prisma.review.create({
       data: {
         ...dto,
@@ -34,7 +34,7 @@ export class ReviewService {
     })
   }
 
-  async getAverageValueByProductId(productId: number) {
+  async getAverageRating(productId: number) {
     return this.prisma.review
       .aggregate({
         where: { productId },

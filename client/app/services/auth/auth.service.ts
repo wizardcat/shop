@@ -1,5 +1,5 @@
 import { getContentType } from '@/api/api.helper'
-import { instance } from '@/api/api.interseptor'
+import { instance } from '@/api/api.interceptor'
 import { IAuthResponse, IEmailPassword } from '@/store/user/user.interface'
 import axios from 'axios'
 import Cookies from 'js-cookie'

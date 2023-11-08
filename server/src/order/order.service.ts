@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma.service'
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async getAll(userId: number) {
+  async getAllOrders(userId: number) {
     return this.prisma.order.findMany({
       where: {
         userId

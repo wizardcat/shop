@@ -7,19 +7,19 @@ import { Prisma } from '@prisma/client'
 import { hash } from 'argon2'
 import { PrismaService } from 'src/prisma.service'
 import { UserDto } from './dto/user.dto'
-import { mainUserInfo } from './main-user-info.object'
+import { userSelectObject } from './userSelect.object'
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getUserProfileById(id: number, selectObject: Prisma.UserSelect = {}) {
+  async getUserProfile(id: number, selectObject: Prisma.UserSelect = {}) {
     const user = await this.prisma.user.findUnique({
       where: {
         id
       },
       select: {
-        ...mainUserInfo,
+        ...userSelectObject,
         favorities: {
           select: {
             id: true,
@@ -48,7 +48,7 @@ export class UserService {
     if (emailPresens && emailPresens.id !== id)
       throw new BadRequestException('Email already in use')
 
-    const user = await this.getUserProfileById(id)
+    const user = await this.getUserProfile(id)
 
     return await this.prisma.user.update({
       where: {
@@ -64,8 +64,8 @@ export class UserService {
     })
   }
 
-  async updateUserFavoriteProductList(userId: number, productId: number) {
-    const user = await this.getUserProfileById(userId)
+  async updateUserFavorities(userId: number, productId: number) {
+    const user = await this.getUserProfile(userId)
 
     if (!user) throw new NotFoundException('User Not Found!')
 

@@ -9,8 +9,8 @@ export class StatisticsService {
     private userService: UserService
   ) {}
 
-  async getMainStatistics(userId: number) {
-    const user = await this.userService.byId(userId, {
+  async getUserStatistics(userId: number) {
+    const user = await this.userService.getUserProfile(userId, {
       orders: {
         select: {
           items: true
@@ -23,7 +23,7 @@ export class StatisticsService {
     from "order" o
     join order_item oi on oi.order_id=o.id 
     where o.user_id=${userId}
-     `
+    `
 
     return [
       {

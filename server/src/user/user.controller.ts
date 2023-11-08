@@ -20,28 +20,25 @@ export class UserController {
 
   @Get('profile')
   @Auth()
-  async getUserInfo(@CurrentUser('id') id: number) {
-    return this.userService.getUserProfileById(id)
+  async getUserProfile(@CurrentUser('id') id: number) {
+    return this.userService.getUserProfile(id)
   }
 
   @HttpCode(200)
   @Put('profile')
   @UsePipes(new ValidationPipe())
   @Auth()
-  async updateUserUserInfo(
-    @CurrentUser('id') id: number,
-    @Body() dto: UserDto
-  ) {
+  async updateUserProfile(@CurrentUser('id') id: number, @Body() dto: UserDto) {
     return this.userService.updateUserProfile(id, dto)
   }
 
   @HttpCode(200)
   @Patch('profile/favorities/:productId')
   @Auth()
-  async updateUserFavoriteProductList(
+  async updateUserFavorities(
     @CurrentUser('id') userId: number,
     @Param('productId') productId: string
   ) {
-    return this.userService.updateUserFavoriteProductList(userId, +productId)
+    return this.userService.updateUserFavorities(userId, +productId)
   }
 }

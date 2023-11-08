@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
 
-export const returnCategoryObject: Prisma.CategorySelect = {
+export const categorySelectObject: Prisma.CategorySelect = {
   id: true,
   name: true,
   slug: true

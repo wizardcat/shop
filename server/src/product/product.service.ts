@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PaginationService } from 'src/pagination/pagination.service'
 import { PrismaService } from 'src/prisma.service'
-import { EnumProductSort } from 'src/types'
+import { ProductSort } from 'src/types'
 import { slugify } from 'src/utils/slugify'
 import { ProductDto } from './dto/product.dto'
 import { ProductSortDto } from './dto/productSort.dto'
@@ -20,11 +20,11 @@ export class ProductService {
 
     const prismaSort: Prisma.ProductOrderByWithRelationInput[] = []
 
-    if (sort === EnumProductSort.LOW_PRICE) {
+    if (sort === ProductSort.LOW_PRICE) {
       prismaSort.push({ price: 'asc' })
-    } else if (sort === EnumProductSort.HIGH_PRICE) {
+    } else if (sort === ProductSort.HIGH_PRICE) {
       prismaSort.push({ price: 'desc' })
-    } else if (sort === EnumProductSort.OLDEST) {
+    } else if (sort === ProductSort.OLDEST) {
       prismaSort.push({ createdAt: 'desc' })
     } else {
       prismaSort.push({ createdAt: 'asc' })
@@ -137,6 +137,14 @@ export class ProductService {
   }
 
   async addProduct(categoryId: number) {
+    const category = await this.prisma.category.findUnique({
+      where: {
+        id: categoryId
+      }
+    })
+
+    if (!category) throw new NotFoundException('Category not found')
+
     const product = await this.prisma.product.create({
       //category ?
       data: {

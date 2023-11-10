@@ -20,7 +20,7 @@ export interface Confirmation {
   confirmation_url: string
 }
 
-export interface IPaymentResponse {
+export interface PaymentResponse {
   id: string
   status: string
   amount: Amount

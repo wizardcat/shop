@@ -1,27 +1,27 @@
-import { IUser } from '@/interfaces/user.interface'
+import { User } from '@/interfaces/user.interface'
 
-export interface IUserState {
+export interface UserState {
   email: string
   // isAdmin: boolean
 }
 
-export interface ITokens {
+export interface Tokens {
   refreshToken: string
   accessToken: string
 }
 
-export interface IInitialState {
-  user: IUserState | null
+export interface InitialState {
+  user: UserState | null
   isLoading: boolean
 }
 
-export interface IEmailPassword {
+export interface EmailPassword {
   email: string
   password: string
 }
 
-export interface IAuthResponse extends ITokens {
-  user: IUser
+export interface AuthResponse extends Tokens {
+  user: User
   // & {
   //   isAdmin: boolean
   // }

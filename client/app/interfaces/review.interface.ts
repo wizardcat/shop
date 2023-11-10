@@ -1,9 +1,14 @@
-import { IUser } from './user.interface'
+import { User } from './user.interface'
 
-export interface IReview {
+export interface Review {
   id: number
   rating: number
   text: string
-  user: IUser
+  user: User
   createdAt: Date
+}
+
+export interface ReviewData {
+  rating: number
+  text: string
 }

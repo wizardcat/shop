@@ -18,8 +18,8 @@ export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Get()
-  async getReviews() {
-    return this.reviewService.getReviews()
+  async getAllReviews() {
+    return this.reviewService.getAllReviews()
   }
 
   @HttpCode(200)

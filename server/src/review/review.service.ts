@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 import { ReviewDto } from './dto/review.dto'
 import { reviewSelectObject } from './reviewSelect.object'
@@ -7,7 +7,7 @@ import { reviewSelectObject } from './reviewSelect.object'
 export class ReviewService {
   constructor(private prisma: PrismaService) {}
 
-  async getReviews() {
+  async getAllReviews() {
     return this.prisma.review.findMany({
       orderBy: {
         createdAt: 'desc'
@@ -17,6 +17,14 @@ export class ReviewService {
   }
 
   async addReview(userId: number, productId: number, dto: ReviewDto) {
+    const product = await this.prisma.product.findUnique({
+      where: {
+        id: productId
+      }
+    })
+
+    if (!product) throw new NotFoundException('Product not found')
+
     return this.prisma.review.create({
       data: {
         ...dto,

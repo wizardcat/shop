@@ -1,14 +1,15 @@
 import { getContentType } from '@/api/api.helper'
 import { instance } from '@/api/api.interceptor'
-import { IAuthResponse, IEmailPassword } from '@/store/user/user.interface'
+import { EnumServicePath } from '@/api/const'
+import { AuthResponse, EmailPassword } from '@/store/user/user.interface'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { saveToStorage } from './auth.helper'
 
 export const AuthService = {
-  async main(type: 'login' | 'register', data: IEmailPassword) {
-    const response = await instance<IAuthResponse>({
-      url: `/auth/${type}`,
+  async main(type: 'login' | 'register', data: EmailPassword) {
+    const response = await instance<AuthResponse>({
+      url: `/${EnumServicePath.AUTH}/${type}`,
       method: 'POST',
       data
     })
@@ -24,7 +25,7 @@ export const AuthService = {
     const response = await axios.post<
       string,
       {
-        data: IAuthResponse
+        data: AuthResponse
       }
     >(
       process.env.SERVER_URL + '/auth/login/access-token',
